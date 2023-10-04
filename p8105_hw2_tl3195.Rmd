@@ -115,7 +115,7 @@ Professor Trash Wheel with a similar process
 ```{r}
 professor_trash_wheel = read_excel(
   "202309 Trash Wheel Collection Data.xlsx", 
-  sheet="Professor Trash Wheel", range = cell_cols("A:N"))|>
+  sheet="Professor Trash Wheel", range = cell_cols("A:M"))|>
   janitor::clean_names()|>
   filter(row_number() <= n()-1)|>
   mutate(homes_powered=weight_tons*500/30)
@@ -128,7 +128,7 @@ Gwynnda with a similar process
 ```{r}
 gwynnda_trash_wheel = read_excel(
   "202309 Trash Wheel Collection Data.xlsx", 
-  sheet="Gwynnda Trash Wheel", range = cell_cols("A:N"))|>
+  sheet="Gwynnda Trash Wheel", range = cell_cols("A:L"))|>
   janitor::clean_names()|>
   filter(row_number() <= n()-2)|>
   mutate(homes_powered=weight_tons*500/30)
