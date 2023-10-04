@@ -157,3 +157,9 @@ mr_trash_wheel_tidy =
 mr_trash_wheel_tidy
 ```
 
+Description
+`trashwheel` is a new variable that I have created in `mr_trash_wheel_tidy` dataset. Specifically, "Mr. Trash Wheel" indicates that the type of trashwheel is Mr. Trash Wheel. "Professor Trash Wheel" indicates that the type of trashwheel is Professor Trash Wheel. “Gwynnda Trash Wheel" indicates that the  type of trashwheel is Gwynnda Trash Wheel. 
+`home_powered` is a variable calculated by weight_tons*500/30. Specifically, Each ton of trash equates to on average 500 kilowatts of electricity. An average household will use 30 kilowatts per day.
+The resulting dataset, as known as `mr_trash_wheel_tidy` has `r nrow(mr_trash_wheel_tidy)` observations and `r ncol(mr_trash_wheel_tidy)` variables. The variables include `trashwheel`, `dumpster`, `month`, `year`, `date`, `weight_tons`, `volume_cubic_yard`, `plastic_bottles`, `polystyrene`, `cigarette_butts`, `glass_bottles`, `plastic_bags`, `wrappers`, `sports_balls`, and `home_powered`. 
+The total weight of trash collected by Professor Trash Wheel was `r sum(professor_trash_wheel$weight_tons)` tons. 
+The total number of cigarette butts collected by Gwynnda in July of 2021 was `r sum(subset(gwynnda_trash_wheel, year == "2021" & month == "July")$cigarette_butts)`.
