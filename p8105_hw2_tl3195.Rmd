@@ -83,3 +83,77 @@ data=pols_month |>
 str(data)
 ```
 
+Description
+There exists some "NA" in both "close" and "unemployment" columns, which indicates that it's the missing value. 
+The `pols-month` data has `r nrow(pols_month)` observations and `r ncol(pols_month)` variables and the variables are `year`, `month`, `gov_gop`, `sen_gop`, `rep_gop`, `gov_dem`, `sen_dem`, `rep_dem`, `president`. It tells us about whether governers belongs to democratic or republican. Moreover, we also know that the variable `year` ranges from 1947 to 2015. 
+The `snp` data has `r nrow(snp)` observations and `r ncol(snp)` variables and the variables are `year`, `month`, and `close`. The varibale `year` ranges from 1950 to 2015.
+The `unemployment` data has `r nrow(unemployment)` observations and `r ncol(unemployment)` variables ranging from years 1948 to 2015.
+The merged dataset `data` has `r nrow(data)` observations and `r ncol(data)` variables and the variables are `year`, `month`, `gov_gop`, `sen_gop`, `rep_gop`, `gov_dem`, `sen_dem`, `rep_dem`, `president`, `close`, and `unemployment`. The variable `year` ranges from 1947 to 2015.
+
+# Problem 2
+
+Read and clean the Mr. Trash Wheel sheet:
+
+Specify the sheet in the Excel file and to omit non-data entries (rows with notes / figures; columns containing notes) using arguments in `read_excel`
+Use reasonable variable names
+Omit rows that do not include dumpster-specific data
+Update the data to include a new `homes_powered` variable based on this calculation: Homes Powered - Each ton of trash equates to on average 500 kilowatts of electricity. An average household will use 30 kilowatts per day.
+
+```{r}
+mr_trash_wheel = read_excel(
+  "202309 Trash Wheel Collection Data.xlsx", 
+  sheet="Mr. Trash Wheel", range = cell_cols("A:N"))|>
+  janitor::clean_names()|>
+  filter(row_number() <= n()-1)|>
+  mutate(homes_powered=weight_tons*500/30)
+
+mr_trash_wheel
+```
+
+Professor Trash Wheel with a similar process
+
+```{r}
+professor_trash_wheel = read_excel(
+  "202309 Trash Wheel Collection Data.xlsx", 
+  sheet="Professor Trash Wheel", range = cell_cols("A:N"))|>
+  janitor::clean_names()|>
+  filter(row_number() <= n()-1)|>
+  mutate(homes_powered=weight_tons*500/30)
+
+professor_trash_wheel
+```
+
+Gwynnda with a similar process
+
+```{r}
+gwynnda_trash_wheel = read_excel(
+  "202309 Trash Wheel Collection Data.xlsx", 
+  sheet="Gwynnda Trash Wheel", range = cell_cols("A:N"))|>
+  janitor::clean_names()|>
+  filter(row_number() <= n()-2)|>
+  mutate(homes_powered=weight_tons*500/30)
+
+gwynnda_trash_wheel
+```
+
+Combine these with the Mr. Trash Wheel dataset to produce a single tidy dataset. To keep track of which Trash Wheel is which, I add an additional variable called `trashwheel` to all datasets before combining.
+
+```{r}
+mr_trash_wheel=mr_trash_wheel |>
+  mutate(trashwheel="Mr. Trash Wheel",
+         year=as.numeric(year))
+
+professor_trash_wheel=professor_trash_wheel |>
+  mutate(trashwheel="Professor Trash Wheel")
+
+gwynnda_trash_wheel=gwynnda_trash_wheel |>
+  mutate(trashwheel="Gwynnda Trash Wheel")
+
+mr_trash_wheel_tidy = 
+  bind_rows(mr_trash_wheel, professor_trash_wheel, gwynnda_trash_wheel) |>
+  janitor::clean_names() |>
+  select(trashwheel, everything())
+
+mr_trash_wheel_tidy
+```
+
