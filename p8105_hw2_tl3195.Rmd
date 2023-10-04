@@ -27,14 +27,13 @@ Create a `president` variable taking values `gop` and `dem`, and remove `prez_de
 ```{r}
 pols_month = read.csv("./fivethirtyeight_datasets/pols-month.csv") |>
   janitor::clean_names()|>
-  separate(mon,into=c("year","month","day"),)|>
+  separate(mon,into=c("year","month","day"))|>
   mutate(month = month.name[as.numeric(month)],
          president=
            case_match(prez_gop, 0~"democratic", 1~"republican", 2~"republican")
         )|>
   select(-prez_dem,-prez_gop,-day)
 
-pols_month
 ```
 
 Clean snp.csv with a similar process:
@@ -46,9 +45,41 @@ snp = read_csv("./fivethirtyeight_datasets/snp.csv",
     col_types = cols(date = col_date(format = "%m/%d/%y"))) |>
   separate(date, into = c("year", "month", "day"), convert = TRUE) |>
   mutate(month = month.name[as.numeric(month)],
-    year = if_else(year > 2023, year - 100, year)) |> 
+         year = if_else(year > 2023, year - 100, year)) |> 
   select(year, month, close) 
 
-snp
+```
+
+Tidy the unemployment data so that it can be merged with the previous datasets.
+
+Switching from “wide” to “long” format.
+Ensuring that key variables have the same name.
+Ensuring that key variables have the same values.
+
+```{r}
+unemployment = read_csv("./fivethirtyeight_datasets/unemployment.csv") |>
+  rename(year = Year) |>
+  pivot_longer(
+    Jan:Dec, 
+    names_to = "month",
+    values_to = "unemployment"
+  ) |> 
+  mutate(month=month.name[match(month,month.abb)])|>
+  mutate(year=as.character(year))
+
+```
+
+Join the datasets by merging `snp` into `pols`, and merging `unemployment` into the result.
+
+```{r}
+pols_month$year <- as.numeric(pols_month$year)
+snp$year <- as.numeric(snp$year)
+unemployment$year <- as.numeric(unemployment$year)
+
+data=pols_month |>
+  left_join(snp, by=c("year", "month")) |>
+  left_join(unemployment, by=c("year", "month"))
+
+str(data)
 ```
 
