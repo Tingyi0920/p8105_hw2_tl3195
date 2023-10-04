@@ -8,3 +8,32 @@ output: github_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
+load libraries
+
+```{r}
+library(tidyverse)
+library(readxl)
+```
+
+# Problem 1
+
+Clean the data in `pols-month.csv`:
+
+Use `separate()` to break up the variable `mon` into integer variables `year`, `month`, and `day`.
+Replace month number with month name.
+Create a `president` variable taking values `gop` and `dem`, and remove `prez_dem` and `prez_gop`; and remove the day variable.
+
+```{r}
+pols_month = read.csv("./fivethirtyeight_datasets/pols-month.csv") |>
+  janitor::clean_names()|>
+  separate(mon,into=c("year","month","day"),)|>
+  mutate(month = month.name[as.numeric(month)],
+         president=
+           case_match(prez_gop, 0~"democratic", 1~"republican", 2~"republican")
+        )|>
+  select(-prez_dem,-prez_gop,-day)
+
+pols_month
+```
+
