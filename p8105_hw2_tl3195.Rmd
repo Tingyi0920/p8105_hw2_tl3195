@@ -202,7 +202,7 @@ Use `case_match()` for `sex` and `apoe4` to convert to the specific categories a
 Use `drop_na(age_at_onset)` to drop missing values in the variable `age_at_onset`. Before using `drop_na()`, we need to first convert "." into "NA" by using `ifelse()`.
 
 Relevant features of dataset:
-The datset `mci_baseline` has `r nrow(mci_baseline)` observations and `r ncol(mci_baseline)` variables. The variables include `id`, `current_age`, `sex`(female vs male), `education` (years), `apoe4` (carrier vs non-carrier), and `age_at_onset`. 
+The datset `mci_baseline` has `r nrow(mci_baseline)` observations and `r ncol(mci_baseline)` variables. The variables include `id`, `current_age` (years), `sex`(female vs male), `education` (years), `apoe4` (carrier vs non-carrier), and `age_at_onset`. 
 483 participants were recruited, and of these `r nrow(mci_baseline)` developed MCI. 
 The average baseline age was `r round(mean(mci_baseline$current_age), 2)` years. 
 The proportion of women in the study are APOE4 carriers is equal to P(apoe4 carriers|women who developed MCI)=`r round(nrow(mci_baseline[mci_baseline$sex == "Female" & mci_baseline$apoe4 == "APOE4 carrier", ]) / nrow(mci_baseline[mci_baseline$sex == "Female", ]), 2)`.
@@ -244,4 +244,40 @@ Use `case_match()` for `time` to convert `time_2`, `time_4`, `time_6` and `time_
 Relevant features: 
 The dataset `mci_amyloid` has `r nrow(mci_amyloid)` observations and `r ncol(mci_amyloid)` variables. The variables include `id`, `baseline`, `time`, and `amyloid`. 
 
+
+Check whether some participants appear in only the baseline or amyloid datasets, and comment on your findings.
+
+Participants only in baseline dataset:
+```{r}
+mci_baseline_only <- anti_join(mci_baseline, mci_amyloid, by = "id")
+
+unique(mci_baseline_only$id)
+```
+
+Participants only in amyloid dataset:
+```{r}
+mci_amyloid_only <- anti_join(mci_amyloid, mci_baseline, by = "id")
+unique(mci_amyloid_only$id)
+```
+
+According to the results, it's apparent that there are some participants appear in only the baseline dataset and there are some participants appear in only the amyloid dataset.
+
+
+Combine the demographic and biomarker datasets so that only participants who appear in both datasets are retained, and briefly describe the resulting dataset.
+Export the result as a CSV to your data directory.
+
+```{r}
+combined_data <- inner_join(mci_baseline, mci_amyloid, by = "id")
+
+combined_data
+```
+
+Description
+The `combined_data` dataset has `r nrow(combined_data)` observations and `r ncol(combined_data)` variables. The variables include `id`, `current_age` (years), `sex` (female vs male), `education` (years), `apoe4` (carrier vs non-carrier), `age_at_onset`, `baseline`, `time` and `amyloid`. 
+
+Export the result as a CSV to the data directory
+
+```{r}
+write_csv(combined_data, file = "./data/output_results.csv")
+```
 
