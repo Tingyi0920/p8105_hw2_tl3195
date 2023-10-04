@@ -205,4 +205,43 @@ Relevant features of dataset:
 The datset `mci_baseline` has `r nrow(mci_baseline)` observations and `r ncol(mci_baseline)` variables. The variables include `id`, `current_age`, `sex`(female vs male), `education` (years), `apoe4` (carrier vs non-carrier), and `age_at_onset`. 
 483 participants were recruited, and of these `r nrow(mci_baseline)` developed MCI. 
 The average baseline age was `r round(mean(mci_baseline$current_age), 2)` years. 
-The proportion of women in the study are APOE4 carriers is equal to P(apoe4 carriers|women who developed MCI)=`r round(nrow(mci_baseline[mci_baseline$sex == "Female" & mci_baseline$apoe4 == "APOE4 carrier", ]) / nrow(mci_baseline[mci_baseline$sex == "Female", ]), 2)`
+The proportion of women in the study are APOE4 carriers is equal to P(apoe4 carriers|women who developed MCI)=`r round(nrow(mci_baseline[mci_baseline$sex == "Female" & mci_baseline$apoe4 == "APOE4 carrier", ]) / nrow(mci_baseline[mci_baseline$sex == "Female", ]), 2)`.
+
+Import, clean, and tidy the dataset of longitudinally observed biomarker values with similar processes. 
+
+Comment on the steps on the import process and the features of the dataset.
+
+```{r}
+mci_amyloid = read_csv("./data_mci/mci_amyloid.csv", skip = 1) |>
+  janitor::clean_names() |>
+  rename(id=study_id) |>
+  pivot_longer(
+    time_2:time_8,
+    names_to = "time",
+    values_to = "amyloid") |>
+  mutate(
+    time = 
+      case_match(
+        time,
+        "time_2" ~ 2,
+        "time_4" ~ 4 ,
+        "time_6" ~ 6,
+        "time_8" ~ 8),
+    time = as.numeric(time),
+    baseline = as.numeric(baseline),
+    amyloid = as.numeric(amyloid)
+  ) 
+
+mci_amyloid  
+```
+
+Description
+When importing `mci_amyloid` dataset, we need to use `skip=1` to skip the first line which is the description of each variable.
+Use `janitor::clean_names()` to convert every variable name to lowercase.
+Use `pivot_long` to change the `mci_amyloid` dataset from wide format to long format, which is easier for data manipulation.
+Use `case_match()` for `time` to convert `time_2`, `time_4`, `time_6` and `time_8` to specfic numbers 2, 4, 6, and 8,respectively. 
+
+Relevant features: 
+The dataset `mci_amyloid` has `r nrow(mci_amyloid)` observations and `r ncol(mci_amyloid)` variables. The variables include `id`, `baseline`, `time`, and `amyloid`. 
+
+
