@@ -37,3 +37,18 @@ pols_month = read.csv("./fivethirtyeight_datasets/pols-month.csv") |>
 pols_month
 ```
 
+Clean snp.csv with a similar process:
+
+arrange according to year and month, and organize so that `year` and `month` are the leading columns.
+
+```{r}
+snp = read_csv("./fivethirtyeight_datasets/snp.csv",
+    col_types = cols(date = col_date(format = "%m/%d/%y"))) |>
+  separate(date, into = c("year", "month", "day"), convert = TRUE) |>
+  mutate(month = month.name[as.numeric(month)],
+    year = if_else(year > 2023, year - 100, year)) |> 
+  select(year, month, close) 
+
+snp
+```
+
