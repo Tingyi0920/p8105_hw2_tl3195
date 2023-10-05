@@ -278,6 +278,6 @@ The `combined_data` dataset has `r nrow(combined_data)` observations and `r ncol
 Export the result as a CSV to the data directory
 
 ```{r}
-write_csv(combined_data, file = "./data/output_results.csv")
+write.csv(combined_data, file = "./data/output_results.csv", row.names = FALSE)
 ```
 
